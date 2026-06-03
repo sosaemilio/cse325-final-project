@@ -9,6 +9,7 @@ Project is made for perfume and fragance enthusiasts to keep track of their exis
 * Emilio Ernesto Sosa Carrillo
 
 ## App Structure
+```
 MyBlazorApp/
 │
 ├── Components/
@@ -24,3 +25,4 @@ MyBlazorApp/
 │
 ├── _Imports.razor       # Global using directives
 └── Program.cs           # App startup and service configuration
+```

@@ -7,3 +7,20 @@ Project is made for perfume and fragance enthusiasts to keep track of their exis
 ## Project Members:
 * Victor Jared Cruz Onato
 * Emilio Ernesto Sosa Carrillo
+
+## App Structure
+MyBlazorApp/
+│
+├── Components/
+│   ├── Layout/          # MainLayout, NavMenu
+│   ├── Pages/           # Routable components (@page "/dashboard")
+│   └── Shared/          # Reusable UI pieces (Modals, Custom Inputs)
+│
+├── Models/              # Data classes and DTOs
+│
+├── Services/            # Business logic, API clients, or DB access
+│
+├── wwwroot/             # Static files (CSS, Images, JS)
+│
+├── _Imports.razor       # Global using directives
+└── Program.cs           # App startup and service configuration

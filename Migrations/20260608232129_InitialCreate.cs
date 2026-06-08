@@ -64,7 +64,8 @@ namespace cse325_final_project.Migrations
                     Brand = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Season = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Occasion = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Occasion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -188,7 +189,9 @@ namespace cse325_final_project.Migrations
                     BuyDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PersonalNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Rating = table.Column<int>(type: "int", nullable: false)
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Season = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Occasion = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -208,11 +211,11 @@ namespace cse325_final_project.Migrations
 
             migrationBuilder.InsertData(
                 table: "Fragrances",
-                columns: new[] { "Id", "Brand", "Name", "Notes", "Occasion", "Season" },
+                columns: new[] { "Id", "Brand", "ImageUrl", "Name", "Notes", "Occasion", "Season" },
                 values: new object[,]
                 {
-                    { 1, "Maison Francis Kurkdjian", "Baccarat Rouge 540", null, null, null },
-                    { 2, "Tom Ford", "Oud Wood", null, null, null }
+                    { 1, "Maison Francis Kurkdjian", null, "Baccarat Rouge 540", null, null, null },
+                    { 2, "Tom Ford", null, "Oud Wood", null, null, null }
                 });
 
             migrationBuilder.CreateIndex(

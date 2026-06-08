@@ -13,4 +13,8 @@ public class VaultItem
 
     public string? PersonalNotes { get; set; }
     public int Rating { get; set; }
+    public string? Season { get; set; }
+    public string? Occasion { get; set; }
+
+
 }

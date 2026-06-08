@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace cse325_final_project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260606084803_InitialCreate")]
+    [Migration("20260608232129_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -105,6 +105,9 @@ namespace cse325_final_project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Brand")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -288,11 +291,17 @@ namespace cse325_final_project.Migrations
                     b.Property<int>("FragranceId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Occasion")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PersonalNotes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
+
+                    b.Property<string>("Season")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");

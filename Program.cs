@@ -21,6 +21,11 @@ builder.Services.AddAuthentication();
 
 var app = builder.Build();
 
+app.MapControllers();
+//Authentication and Authorization
+app.UseAuthentication();
+app.UseAuthorization();
+
 //Seed DB
 using (var scope = app.Services.CreateScope())
 {
@@ -43,5 +48,9 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+
+
+
 
 app.Run();

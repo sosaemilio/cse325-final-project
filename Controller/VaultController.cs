@@ -5,6 +5,7 @@ using System.Security.Claims;
 
 using FragranceVault.DTOs;
 using FragranceVault.Data;
+using FragranceVault.Models;
 
 [Route("api/vault")]
 [ApiController]
@@ -19,15 +20,15 @@ public class VaultController : ControllerBase
     }
 
     
-private string GetUserId()
-{
-    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    private string GetUserId()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-    if (userId == null)
-        throw new UnauthorizedAccessException("User not authenticated.");
+        if (userId == null)
+            throw new UnauthorizedAccessException("User not authenticated.");
 
-    return userId;
-}
+        return userId;
+    }
 
 
     // GET: api/vault

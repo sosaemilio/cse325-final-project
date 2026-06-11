@@ -1,0 +1,97 @@
+@using FragranceVault.Data;
+@using FragranceVault.Models
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+
+
+@page "/browse"
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+@inject AppDbContext _context
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+
+
+
+<h3>Browse Fragrances</h3>
+
+<p>Total: @fragrances.Count</p>
+
+<div class="grid">
+    @foreach (var item in fragrances)
+    {
+        
+<div class="card">
+
+    <div @onclick="() => GoToDetails(item.Id)">
+       @if (!string.IsNullOrEmpty(item.ImageUrl))
+            {
+                <img src="@item.ImageUrl" alt="@item.Name" />
+            }
+        <h4>@item.Name</h4>
+        <p>@item.Brand</p>
+    </div>
+</div>
+
+    }
+</div>
+
+<p>@message</p>
+
+@code {
+    private List<Fragrance> fragrances = new();
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFragrances();
+    }
+
+    private async Task LoadFragrances()
+    {
+        var response = await Http.GetAsync("/api/fragrances");
+
+        if (response.IsSuccessStatusCode)
+        {
+            fragrances = await response.Content.ReadFromJsonAsync<List<Fragrance>>() 
+                          ?? new List<Fragrance>();
+        }
+        else
+        {
+            message = "Failed to load fragrances";
+        }
+    }
+
+    
+
+
+    private void GoToDetails(int fragranceId)
+    {
+        Navigation.NavigateTo($"/fragrance/{fragranceId}");
+    }
+
+    
+
+private async Task<string?> GetUserId()
+{
+    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+
+    Console.WriteLine($"Authenticated: {user.Identity?.IsAuthenticated}");
+
+    return user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+}
+
+
+
+
+}

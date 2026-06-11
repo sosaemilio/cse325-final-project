@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 using FragranceVault.DTOs;
+using FragranceVault.Models;
 
 [Route("api/auth")]
 [ApiController]
@@ -38,18 +39,28 @@ public class AuthController: ControllerBase
 
                 return Ok(new {message = "User registered successfully"});
             }
+            
     [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto dto)
-    {
-        var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, false, false);
-
-        if (!result.Succeeded)
+        public async Task<IActionResult> Login([FromForm] LoginDto dto)
         {
-            return Unauthorized(new {message = "Invalid email or password"});
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            if (user == null)
+                return Unauthorized("Invalid credentials");
+
+            var result = await _signInManager.PasswordSignInAsync(
+                user,
+                dto.Password,
+                isPersistent: false,
+                lockoutOnFailure: false
+            );
+
+            if (!result.Succeeded)
+                return Unauthorized("Invalid credentials");
+
+            return Redirect("/dashboard"); 
         }
-        
-        return Ok(new { message = "Login successful" });    
-    }
+
 
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()

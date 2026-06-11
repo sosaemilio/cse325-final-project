@@ -2,36 +2,75 @@ using cse325_final_project.Components;
 using FragranceVault.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components;
+
+
+using FragranceVault.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+
+
+builder.Services.AddScoped(sp =>
+{
+    var navigation = sp.GetRequiredService<NavigationManager>();
+    return new HttpClient
+    {
+        BaseAddress = new Uri(navigation.BaseUri)
+    };
+});
+
+
+
+
 //DB Context
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 //Identity authentication
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+    
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication();
+builder.Services.AddCascadingAuthenticationState();
+
+
+
+
+
+
+
+
+
+
 
 var app = builder.Build();
 
-app.MapControllers();
+
 //Authentication and Authorization
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
 
 //Seed DB
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     DbInitializer.Seed(db);
+
+
 }
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

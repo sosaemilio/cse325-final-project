@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace cse325_final_project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260608232129_InitialCreate")]
+    [Migration("20260611004452_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace cse325_final_project.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ApplicationUser", b =>
+            modelBuilder.Entity("FragranceVault.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -45,9 +45,11 @@ namespace cse325_final_project.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -96,7 +98,7 @@ namespace cse325_final_project.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Fragrance", b =>
+            modelBuilder.Entity("FragranceVault.Models.Fragrance", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,40 +107,76 @@ namespace cse325_final_project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Brand")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Occasion")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Season")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Fragrances");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Brand = "Maison Francis Kurkdjian",
-                            Name = "Baccarat Rouge 540"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Brand = "Tom Ford",
-                            Name = "Oud Wood"
-                        });
+            modelBuilder.Entity("FragranceVault.Models.VaultItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BuyDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FragranceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Occasion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PersonalNotes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Season")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FragranceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("VaultItems");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -274,45 +312,23 @@ namespace cse325_final_project.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("VaultItem", b =>
+            modelBuilder.Entity("FragranceVault.Models.VaultItem", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("FragranceVault.Models.Fragrance", "Fragrance")
+                        .WithMany()
+                        .HasForeignKey("FragranceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.HasOne("FragranceVault.Models.ApplicationUser", "User")
+                        .WithMany("VaultItems")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<DateTime>("BuyDate")
-                        .HasColumnType("datetime2");
+                    b.Navigation("Fragrance");
 
-                    b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FragranceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Occasion")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PersonalNotes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Season")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FragranceId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("VaultItems");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -326,7 +342,7 @@ namespace cse325_final_project.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("ApplicationUser", null)
+                    b.HasOne("FragranceVault.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -335,7 +351,7 @@ namespace cse325_final_project.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("ApplicationUser", null)
+                    b.HasOne("FragranceVault.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -350,7 +366,7 @@ namespace cse325_final_project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ApplicationUser", null)
+                    b.HasOne("FragranceVault.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -359,31 +375,14 @@ namespace cse325_final_project.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("ApplicationUser", null)
+                    b.HasOne("FragranceVault.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VaultItem", b =>
-                {
-                    b.HasOne("Fragrance", "Fragrance")
-                        .WithMany()
-                        .HasForeignKey("FragranceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApplicationUser", "User")
-                        .WithMany("VaultItems")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Fragrance");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ApplicationUser", b =>
+            modelBuilder.Entity("FragranceVault.Models.ApplicationUser", b =>
                 {
                     b.Navigation("VaultItems");
                 });

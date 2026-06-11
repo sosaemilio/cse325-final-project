@@ -1,0 +1,134 @@
+@page "/fragrance/{Id:int}"
+@rendermode InteractiveServer
+
+@inject AppDbContext _context
+@inject AuthenticationStateProvider AuthStateProvider
+
+@inject NavigationManager Nav
+
+@using FragranceVault.Models
+@using Microsoft.AspNetCore.Components.Authorization
+@using FragranceVault.Data
+@using Microsoft.EntityFrameworkCore
+
+
+<h3>Fragrance Details</h3>
+
+@if (fragrance == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="details">
+
+        @if (!string.IsNullOrEmpty(fragrance.ImageUrl))
+        {
+            <img src="@fragrance.ImageUrl" />
+        }
+
+        <h2>@fragrance.Name</h2>
+        <p><b>Brand:</b> @fragrance.Brand</p>
+        <p><b>Notes:</b> @fragrance.Notes</p>
+        <p><b>Season:</b> @fragrance.Season</p>
+        <p><b>Occasion:</b> @fragrance.Occasion</p>
+
+        <hr />
+
+        <h4>Add to Vault</h4>
+
+        <label>Notes</label>
+        <input @bind="notes" />
+
+        <label>Season</label>
+        <input @bind="season" />
+
+        <label>Occasion</label>
+        <input @bind="occasion" />
+
+        <br />
+
+        <button @onclick="AddToVault">Add to Vault</button>
+
+        <p>@message</p>
+
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Fragrance? fragrance;
+
+    private string notes = "";
+    private string season = "";
+    private string occasion = "";
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFragrance();
+    }
+
+    
+private async Task LoadFragrance()
+{
+    fragrance = await _context.Fragrances.FindAsync(Id);
+
+    if (fragrance != null)
+    {
+        notes = fragrance.Notes ?? "";
+        season = fragrance.Season ?? "";
+        occasion = fragrance.Occasion ?? "";
+    }
+}
+
+
+    private async Task AddToVault()
+{
+    if (fragrance == null) return;
+
+    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+
+    var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+    if (string.IsNullOrEmpty(userId))
+    {
+        message = "❌ Not logged in";
+        return;
+    }
+
+    
+var exists = await _context.VaultItems.AnyAsync(v => v.UserId == userId && v.FragranceId == fragrance.Id);
+
+    if (exists)
+    {
+        message = "⚠️ This fragrance is already in your vault!";
+        return;
+    }
+
+
+    var item = new VaultItem
+    {
+        UserId = userId,
+        FragranceId = fragrance.Id,
+        BuyDate = DateTime.Now,
+        ExpirationDate = DateTime.Now.AddYears(2),
+
+        // ✅ USER CUSTOM VALUES
+        PersonalNotes = notes,
+        Season = season,
+        Occasion = occasion,
+        Rating = 0
+    };
+
+    _context.VaultItems.Add(item);
+    await _context.SaveChangesAsync();
+
+    message = "✅ Added to your vault!";
+
+    // ✅ Redirect to vault after saving
+    Nav.NavigateTo("/browse");
+}
+}

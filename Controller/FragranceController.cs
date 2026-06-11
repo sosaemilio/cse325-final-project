@@ -30,4 +30,24 @@ public class FragranceController : ControllerBase
 
         return Ok(await query.ToListAsync());
     }
+
+    
+    [HttpGet("{id}")]
+    
+
+        public async Task<IActionResult> GetById(int id)
+        {
+            var fragrance = await _context.Fragrances.FindAsync(id);
+
+            if (fragrance == null)
+                return NotFound();
+
+            return Ok(fragrance);
+        }
+
+       
 }
+
+
+
+    

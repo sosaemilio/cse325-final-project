@@ -1,5 +1,7 @@
 using FragranceVault.Data;
 using Microsoft.EntityFrameworkCore;
+
+using FragranceVault.Models;
 public class VaultService
 {
     private readonly AppDbContext _context;

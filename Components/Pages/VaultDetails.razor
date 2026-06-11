@@ -1,0 +1,166 @@
+@page "/vault/{Id:int}"
+@rendermode InteractiveServer
+
+
+@inject AppDbContext _context
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+@using FragranceVault.Models
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Authorization
+@using FragranceVault.Data
+
+
+<h3>Vault Item Details</h3>
+
+
+
+@if (item == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="details">
+
+        <img src="@item.Fragrance?.ImageUrl" />
+
+        <h2>@item.Fragrance?.Name</h2>
+        <p>@item.Fragrance?.Brand</p>
+
+        <hr />
+
+        <label>Buy Date</label>
+        <input type="date" @bind="buyDate" />
+
+        <label>Expiration Date</label>
+        <input type="date" @bind="expirationDate" />
+
+        <label>Notes</label>
+        <textarea @bind="notes"></textarea>
+
+        <label>Season</label>
+        <input @bind="season" />
+
+        <label>Occasion</label>
+        <input @bind="occasion" />
+
+        <label>Rating</label>
+        <input type="number" @bind="rating" min="0" max="5" />
+
+        <br />
+
+        <button @onclick="SaveChanges">Save</button>
+
+        
+        
+        <button class="delete-btn"
+                @onclick="ConfirmDelete">
+            Delete
+        </button>
+
+
+
+        <p>@message</p>
+
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private VaultItem? item;
+
+    private DateTime buyDate;
+    private DateTime? expirationDate;
+    private string notes = "";
+    private string season = "";
+    private string occasion = "";
+    private int rating;
+
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItem();
+    }
+
+    private async Task LoadItem()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId)) return;
+
+        item = await _context.VaultItems
+            .Where(v => v.Id == Id && v.UserId == userId)
+            .Include(v => v.Fragrance)
+            .FirstOrDefaultAsync();
+
+        if (item != null)
+        {
+            buyDate = item.BuyDate;
+            expirationDate = item.ExpirationDate;
+            notes = item.PersonalNotes;
+            season = item.Season;
+            occasion = item.Occasion;
+            rating = item.Rating;
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        if (item == null) return;
+
+        item.BuyDate = buyDate;
+        item.ExpirationDate = expirationDate;
+        item.PersonalNotes = notes;
+        item.Season = season;
+        item.Occasion = occasion;
+        item.Rating = rating;
+
+        await _context.SaveChangesAsync();
+
+        message = "✅ Saved successfully!";
+    }
+
+    private async Task DeleteItem()
+{
+    if (item == null) return;
+
+    // ✅ ensure user owns it (extra security)
+    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+
+    var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+    if (item.UserId != userId)
+    {
+        message = "❌ Unauthorized";
+        return;
+    }
+
+    _context.VaultItems.Remove(item);
+    await _context.SaveChangesAsync();
+
+    // ✅ Redirect after delete
+    Nav.NavigateTo("/vault");
+}
+
+private async Task ConfirmDelete()
+{
+    var confirmed = await JS.InvokeAsync<bool>("confirm", "Delete this item?");
+
+    if (confirmed)
+    {
+        await DeleteItem();
+    }
+}
+
+
+
+}

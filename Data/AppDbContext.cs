@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using FragranceVault.Models;
 
 namespace FragranceVault.Data;
+
 public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
     public DbSet<Fragrance> Fragrances { get; set; }
@@ -16,10 +18,5 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(builder);
 
-        // Seed sample fragrances
-        builder.Entity<Fragrance>().HasData(
-            new Fragrance { Id = 1, Name = "Baccarat Rouge 540", Brand = "Maison Francis Kurkdjian" },
-            new Fragrance { Id = 2, Name = "Oud Wood", Brand = "Tom Ford" }
-        );
     }
 }

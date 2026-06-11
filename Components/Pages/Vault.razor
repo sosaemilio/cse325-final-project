@@ -1,0 +1,93 @@
+@page "/vault"
+@rendermode InteractiveServer
+
+@inject AppDbContext _context
+@inject AuthenticationStateProvider AuthStateProvider
+
+
+@using FragranceVault.Models
+@using FragranceVault.Data
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+<h2 style="margin-left: 30px;">The Vault</h2>
+
+<p>Total: @vault.Count</p>
+
+<div class="vault-grid">
+    @foreach (var item in vault)
+    {
+        <div class="vault-card" @onclick='() => Navigation.NavigateTo($"/vault/{item.Id}")'>
+
+            <img src="@item.Fragrance?.ImageUrl" />
+
+            <h4>@item.Fragrance?.Name</h4>
+            <p>@item.Fragrance?.Brand</p>
+
+            <div class="tags">
+                <span>@item.Season</span>
+                <span>@item.Occasion</span>
+            </div>
+
+            <p>⭐ @item.Rating</p>
+
+
+        </div>
+    }
+</div>
+
+
+@code {
+    private List<VaultItem> vault = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadVault();
+    }
+    private async Task LoadVault()
+{
+    Console.WriteLine("LOAD VAULT CLICKED ✅");
+
+    var userId = await GetUserId();
+
+    Console.WriteLine($"UserId: {userId}");
+
+    if (string.IsNullOrEmpty(userId))
+    {
+        Console.WriteLine("NOT LOGGED IN ❌");
+        return;
+    }
+
+    vault = await _context.VaultItems
+        .Where(v => v.UserId == userId)
+        .Include(v => v.Fragrance)
+        .ToListAsync();
+
+    Console.WriteLine($"Items loaded: {vault.Count}");
+}
+
+private async Task DeleteItem(int id)
+{
+    var item = await _context.VaultItems.FindAsync(id);
+
+    if (item != null)
+    {
+        _context.VaultItems.Remove(item);
+        await _context.SaveChangesAsync();
+    }
+
+    await LoadVault(); // refresh
+}
+
+
+    
+private async Task<string?> GetUserId()
+{
+    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+
+    return user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+}
+
+}

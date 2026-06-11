@@ -1,0 +1,41 @@
+@page "/register"
+@rendermode InteractiveServer
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+@using FragranceVault.DTOs;
+
+<h3>Register</h3>
+<input @bind="model.FirstName" placeholder="First Name" />
+<input @bind="model.LastName" placeholder="Last Name" />   
+<input @bind="model.Email" placeholder="Email" />
+<input @bind="model.Password" placeholder="Password" type="password" />
+
+<button @onclick="RegisterUser">Register</button>
+
+<p>@message</p>
+
+@code {
+    private RegisterDto model = new RegisterDto();
+    private string message = "";
+
+    private async Task RegisterUser()
+{
+    Console.WriteLine("BUTTON CLICKED ✅");
+
+    var response = await Http.PostAsJsonAsync("/api/auth/register", model);
+
+    var content = await response.Content.ReadAsStringAsync();
+
+    Console.WriteLine(content);
+
+    if (response.IsSuccessStatusCode)
+    {
+        Navigation.NavigateTo("/login", true);
+    }
+    else
+    {
+        message = content;
+    }
+}
+}

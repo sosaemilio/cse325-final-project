@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace cse325_final_project.Migrations
 {
     /// <inheritdoc />
@@ -32,8 +30,8 @@ namespace cse325_final_project.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -60,11 +58,11 @@ namespace cse325_final_project.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Brand = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Season = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Occasion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Season = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Occasion = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -184,14 +182,14 @@ namespace cse325_final_project.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FragranceId = table.Column<int>(type: "int", nullable: false),
                     BuyDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PersonalNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PersonalNotes = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
-                    Season = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Occasion = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Season = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Occasion = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -200,22 +198,14 @@ namespace cse325_final_project.Migrations
                         name: "FK_VaultItems_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_VaultItems_Fragrances_FragranceId",
                         column: x => x.FragranceId,
                         principalTable: "Fragrances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Fragrances",
-                columns: new[] { "Id", "Brand", "ImageUrl", "Name", "Notes", "Occasion", "Season" },
-                values: new object[,]
-                {
-                    { 1, "Maison Francis Kurkdjian", null, "Baccarat Rouge 540", null, null, null },
-                    { 2, "Tom Ford", null, "Oud Wood", null, null, null }
                 });
 
             migrationBuilder.CreateIndex(

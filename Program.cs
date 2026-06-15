@@ -32,7 +32,7 @@ builder.Services.AddScoped(sp =>
 
 //DB Context
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 //Identity authentication
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()

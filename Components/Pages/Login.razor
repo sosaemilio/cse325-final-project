@@ -64,27 +64,23 @@
     private async Task HandleLogin()
     {
         Console.WriteLine($"Form submitted successfully for: {loginCredentials.Email} ✅");
-        errorMessage = ""; // Reset error state
+        errorMessage = ""; 
 
         try
         {
-            // 1. Inject HttpClient if you haven't already at the top of the file: @inject HttpClient Http
-            // Send the login credentials to your teammate's backend API auth controller
             var response = await Http.PostAsJsonAsync("/api/auth/login", loginCredentials);
             
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Login API request succeeded! 🚀");
+                Console.WriteLine("Login API request succeeded!");
                 
-                // 2. Route the user to the secure vault dashboard area
                 Navigation.NavigateTo("/dashboard", true);
             }
             else
             {
-                // Pull out the failure reason (e.g., "Invalid Password", "User not found")
                 var content = await response.Content.ReadAsStringAsync();
                 errorMessage = !string.IsNullOrEmpty(content) ? content : "Invalid email or password.";
-                Console.WriteLine($"Login failed: {errorMessage} ❌");
+                Console.WriteLine($"Login failed: {errorMessage} ");
             }
         }
         catch (Exception ex)

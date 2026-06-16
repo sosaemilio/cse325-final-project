@@ -14,7 +14,6 @@
     <img src="/images/sample-images/login.png" alt="Logo" class="login-logo" />
 </div>
 
-<!-- 💡 Wrap everything inside the card layout container -->
 <div class="login-card">
     <div class="login-header">
         <h2 class="headline-md">LOG IN</h2>
@@ -35,8 +34,6 @@
             <InputText id="password" type="password" class="form-control-custom" @bind-Value="loginCredentials.Password" placeholder="••••••••" />
             <ValidationMessage For="@(() => loginCredentials.Password)" class="validation-error" />
         </div>
-
-        <!-- 💡 Swapped class to btn-login to instantly connect your CSS styles -->
         <button type="submit" class="btn-login">ENTER VAULT</button>
     </EditForm>
     

@@ -41,15 +41,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
-
-
-
-
-
-
-
-
-
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+});
 
 
 var app = builder.Build();
@@ -60,6 +55,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+
+
 
 //Seed DB
 using (var scope = app.Services.CreateScope())

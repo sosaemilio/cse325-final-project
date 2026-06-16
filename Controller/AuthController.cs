@@ -18,7 +18,7 @@ public class AuthController: Controller
     }
 
 
-//Register a new user 
+
     [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
             {
@@ -35,7 +35,14 @@ public class AuthController: Controller
                 if (!result.Succeeded)
                 {
                     
-                    var errors = result.Errors.Select(e => e.Description);
+                    var errors = result.Errors.Select(e =>
+                    {
+                        if (e.Code == "DuplicateUserName" || e.Code == "DuplicateEmail")
+                            return "An account with this email already exists";
+
+                        return e.Description;
+                    });
+
                     return BadRequest(errors);
 
                 }
@@ -49,7 +56,7 @@ public class AuthController: Controller
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user == null)
-                return Unauthorized("Invalid credentials");
+                return Redirect("/login?error=invalid");
 
             var result = await _signInManager.PasswordSignInAsync(
                 user,
@@ -61,6 +68,13 @@ public class AuthController: Controller
             if (!result.Succeeded)
                 return Redirect("/login?error=invalid");
 
+            var claims = new List<System.Security.Claims.Claim>
+            {
+                new System.Security.Claims.Claim("FirstName", user.FirstName)
+            };
+
+            await _signInManager.SignInWithClaimsAsync(user, isPersistent: true, claims);
+
             return Redirect("/dashboard");
         }
 
@@ -69,7 +83,7 @@ public class AuthController: Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return Ok(new { message = "Logout successful" });
+        return Redirect("/");
     }
     
 

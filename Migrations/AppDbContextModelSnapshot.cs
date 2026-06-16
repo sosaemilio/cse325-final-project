@@ -79,6 +79,9 @@ namespace cse325_final_project.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -124,7 +127,7 @@ namespace cse325_final_project.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Fragrances");
+                    b.ToTable("Fragrances", (string)null);
                 });
 
             modelBuilder.Entity("FragranceVault.Models.VaultItem", b =>
@@ -167,7 +170,7 @@ namespace cse325_final_project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("VaultItems");
+                    b.ToTable("VaultItems", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

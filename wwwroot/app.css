@@ -57,6 +57,7 @@ body {
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    padding: 1rem 4rem;
 }
 
 /* Fixed Grid Core Container Wrapper */
@@ -270,7 +271,7 @@ h2 {
 .container-intro {
     display: flex;
     gap: 24px;
-    padding: 24px;
+    padding: 24px 0;
     align-items: center;
 }
 

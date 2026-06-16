@@ -1,0 +1,19 @@
+.container-experience {
+    text-align: center;
+}
+
+.experience-features {
+    margin-top: 2rem;
+    gap: 24px;
+    display: flex;
+    direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+}
+
+.container-analytics {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

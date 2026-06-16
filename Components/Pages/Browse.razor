@@ -1,15 +1,12 @@
+@page "/browse"
+@rendermode InteractiveServer
+<PageTitle>Browser our Curated Collection</PageTitle>
+
 @using FragranceVault.Data;
 @using FragranceVault.Models
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.EntityFrameworkCore
-
-
-@page "/browse"
-@rendermode InteractiveServer
-@attribute [Authorize]
-
-
 
 @inject HttpClient Http
 @inject NavigationManager Navigation
@@ -19,29 +16,25 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 
-
-
-
 <h1>Curated Collection</h1>
+<p>Explore our extensive archive of artisanal scents. Filter by notes, houses, and concentrations to find your next signature.</p>
 
-<p>Total: @fragrances.Count</p>
+<p>Showing @fragrances.Count Fragrances</p>
 
 <div class="grid">
     @foreach (var item in fragrances)
-    {
-        
-<div class="card">
+    {         
+        <div class="card">
 
-    <div @onclick="() => GoToDetails(item.Id)">
-       @if (!string.IsNullOrEmpty(item.ImageUrl))
-            {
-                <img src="@item.ImageUrl" alt="@item.Name" />
-            }
-        <h4>@item.Name</h4>
-        <p>@item.Brand</p>
-    </div>
-</div>
-
+            <div @onclick="() => GoToDetails(item.Id)">
+            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        <img src="@item.ImageUrl" alt="@item.Name" />
+                    }
+                <h2>@item.Name</h2>
+                <p>@item.Brand</p>
+            </div>
+        </div>
     }
 </div>
 

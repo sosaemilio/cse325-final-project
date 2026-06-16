@@ -1,0 +1,136 @@
+/* ==========================================================================
+   AETHERIS LUXE - LOGIN WINDOW CONTAINER
+   ========================================================================== */
+.login-card {
+    background-color: var(--surface-container-lowest); /* Pure White Card Canvas */
+    border: 1px solid var(--outline-variant);          /* 1px low-weight perimeter stroke */
+    padding: calc(var(--unit) * 12) calc(var(--unit) * 10); /* Strict 4px baseline macro-spacing */
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.02);       /* Deep focus low-opacity shadow */
+    margin: 0 auto;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: calc(var(--unit) * 10);
+}
+
+.auth-logo {
+    display: block;
+    font-size: 24px;
+    color: var(--muted-gold);                          /* Micro-interaction branding focus */
+    margin-bottom: var(--unit);
+}
+
+.login-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;                                   /* headline-md mapping */
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--primary);
+    margin-bottom: var(--unit);
+}
+
+.login-header p {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;                                   /* body-md mapping */
+    color: var(--on-surface-variant);
+}
+
+/* ==========================================================================
+   FORM COMPONENT ARCHITECTURE
+   ========================================================================== */
+
+/* Since Login.razor uses Blazor components like <EditForm>, we use ::deep 
+   to force isolation tokens down to the rendered HTML child elements */
+
+::deep .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--unit);
+    margin-bottom: calc(var(--unit) * 6);
+}
+
+::deep .form-group label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;                                   /* label-caps mapping */
+    font-weight: 600;
+    line-height: 1;
+    text-transform: uppercase;                         /* Rigorous physical label look */
+    letter-spacing: 0.15em;                            /* Generous spacing alignment */
+    color: var(--on-surface-variant);
+}
+
+/* 90-Degree Geometry Inputs with single 1px bottom border */
+::deep .form-control-custom {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid var(--outline);           /* Bottom-stroke design constraint */
+    padding: calc(var(--unit) * 3) var(--unit);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--on-surface);
+    transition: border-color 0.2s ease;
+}
+
+::deep .form-control-custom:focus {
+    outline: none;
+    border-bottom: 1px solid var(--primary);          /* Snaps to sharp pure black focus */
+}
+
+/* ==========================================================================
+   ACTION SELECTIONS & REDIRECT FOOTERS
+   ========================================================================== */
+::deep .btn-login {
+    background-color: var(--primary);                  /* Solid Pure Black primary button */
+    color: var(--on-primary);
+    border: none;
+    width: 100%;
+    padding: calc(var(--unit) * 3.5);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;                                   /* label-caps layout button tracking */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    margin-top: calc(var(--unit) * 2);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::deep .btn-login:hover {
+    background-color: var(--muted-gold);               /* Solid premium metallic luster swap */
+    color: var(--primary);
+}
+
+/* Desaturated elegant error validation string */
+::deep .validation-error {
+    color: var(--error);                               /* De-saturated red token profile */
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;                                   /* label-sm validation rendering */
+    font-weight: 500;
+    margin-top: calc(var(--unit) * 3);
+    text-align: center;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: calc(var(--unit) * 8);
+}
+
+.login-footer p {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--on-surface-variant);
+}
+
+.login-footer a {
+    color: var(--muted-gold);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}

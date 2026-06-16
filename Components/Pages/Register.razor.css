@@ -1,0 +1,130 @@
+
+.register-card {
+    background-color: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);          
+    padding: calc(var(--unit) * 12) calc(var(--unit) * 10); 
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.02); 
+    margin: 0 auto;
+}
+
+.register-header {
+    text-align: center;
+    margin-bottom: calc(var(--unit) * 8);
+}
+
+.auth-logo {
+    display: block;
+    font-size: 24px;
+    color: var(--muted-gold);
+    margin-bottom: var(--unit);
+}
+
+.register-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--primary);
+    margin-bottom: var(--unit);
+}
+
+.register-header p {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--on-surface-variant);
+}
+
+/* ==========================================================================
+   FORM COMPONENT ARCHITECTURE
+   ========================================================================== */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--unit);
+    margin-bottom: calc(var(--unit) * 6);
+}
+
+.form-group label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;                                   /* label-caps mapping */
+    font-weight: 600;
+    line-height: 1;
+    text-transform: uppercase;                         /* Rigorous physical label look */
+    letter-spacing: 0.15em;                            /* Generous spacing alignment */
+    color: var(--on-surface-variant);
+}
+
+/* 90-Degree Geometry Inputs with single 1px bottom border */
+.form-control-custom {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid var(--outline);           /* Bottom-stroke design constraint */
+    padding: calc(var(--unit) * 3) var(--unit);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--on-surface);
+    transition: border-color 0.2s ease;
+}
+
+.form-control-custom:focus {
+    outline: none;
+    border-bottom: 1px solid var(--primary);          /* Snaps to sharp pure black focus */
+}
+
+/* ==========================================================================
+   ACTION SELECTIONS & REDIRECT FOOTERS
+   ========================================================================== */
+.btn-register {
+    background-color: var(--primary);                  /* Solid Pure Black primary button */
+    color: var(--on-primary);
+    border: none;
+    width: 100%;
+    padding: calc(var(--unit) * 3.5);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;                                   /* label-caps layout button tracking */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    margin-top: var(--unit);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-register:hover {
+    background-color: var(--muted-gold);               /* Solid premium metallic luster swap */
+    color: var(--primary);
+}
+
+/* Desaturated elegant error validation string */
+.validation-error {
+    color: var(--error);                               /* De-saturated red token profile */
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;                                   /* label-sm validation rendering */
+    font-weight: 500;
+    margin-top: calc(var(--unit) * 3);
+    text-align: center;
+}
+
+.register-footer {
+    text-align: center;
+    margin-top: calc(var(--unit) * 8);
+}
+
+.register-footer p {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--on-surface-variant);
+}
+
+.register-footer a {
+    color: var(--muted-gold);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-footer a:hover {
+    text-decoration: underline;
+}

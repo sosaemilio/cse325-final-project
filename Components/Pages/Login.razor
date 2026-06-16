@@ -2,15 +2,23 @@
 @layout AuthLayout
 @rendermode InteractiveServer
 
-@using FragranceVault.DTOs  @using Microsoft.AspNetCore.Components.Authorization
+@using FragranceVault.DTOs  
+@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+@inject HttpClient Http
 
+<PageTitle>Login - Fragance Vault</PageTitle>
+
+<div class="login-header">
+    <img src="/images/sample-images/login.png" alt="Logo" class="login-logo" />
+</div>
+
+<!-- 💡 Wrap everything inside the card layout container -->
 <div class="login-card">
     <div class="login-header">
-        <span class="auth-logo">✦</span>
-        <h2>Welcome Back</h2>
-        <p>Sign in to manage your fragrance collection</p>
+        <h2 class="headline-md">LOG IN</h2>
+        <p class="body-md">Enter the vault to access your curated collection.</p>
     </div>
 
     <EditForm Model="@loginCredentials" OnValidSubmit="HandleLogin">
@@ -28,12 +36,19 @@
             <ValidationMessage For="@(() => loginCredentials.Password)" class="validation-error" />
         </div>
 
-        <button type="submit" class="btn-secondary">Sign In</button>
+        <!-- 💡 Swapped class to btn-login to instantly connect your CSS styles -->
+        <button type="submit" class="btn-login">ENTER VAULT</button>
     </EditForm>
+    
+    <div class="login-footer">
+        <p>Don't have an account? <a href="/register">Register</a></p>
+    </div>
 </div>
+
 
 @code {
     private LoginDto loginCredentials = new LoginDto();
+    private string errorMessage = ""; // Add this to display backend errors to the user
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,8 +61,36 @@
         }
     }
 
-    private void HandleLogin()
+    private async Task HandleLogin()
     {
-        Console.WriteLine($"Form submitted successfully for: {loginCredentials.Email}");
+        Console.WriteLine($"Form submitted successfully for: {loginCredentials.Email} ✅");
+        errorMessage = ""; // Reset error state
+
+        try
+        {
+            // 1. Inject HttpClient if you haven't already at the top of the file: @inject HttpClient Http
+            // Send the login credentials to your teammate's backend API auth controller
+            var response = await Http.PostAsJsonAsync("/api/auth/login", loginCredentials);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Login API request succeeded! 🚀");
+                
+                // 2. Route the user to the secure vault dashboard area
+                Navigation.NavigateTo("/dashboard", true);
+            }
+            else
+            {
+                // Pull out the failure reason (e.g., "Invalid Password", "User not found")
+                var content = await response.Content.ReadAsStringAsync();
+                errorMessage = !string.IsNullOrEmpty(content) ? content : "Invalid email or password.";
+                Console.WriteLine($"Login failed: {errorMessage} ❌");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "A server connection error occurred.";
+            Console.WriteLine($"Database or network connection exception: {ex.Message}");
+        }
     }
 }

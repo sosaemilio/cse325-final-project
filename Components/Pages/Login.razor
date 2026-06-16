@@ -1,40 +1,53 @@
 @page "/login"
+@layout AuthLayout
 @rendermode InteractiveServer
 
-@inject NavigationManager Navigation
-
-@using FragranceVault.DTOs;
-
-
-@using Microsoft.AspNetCore.Components.Authorization
-
+@using FragranceVault.DTOs  @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 
+<div class="login-card">
+    <div class="login-header">
+        <span class="auth-logo">✦</span>
+        <h2>Welcome Back</h2>
+        <p>Sign in to manage your fragrance collection</p>
+    </div>
 
-<h3>Login</h3>
+    <EditForm Model="@loginCredentials" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
 
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <InputText id="email" class="form-control-custom" @bind-Value="loginCredentials.Email" placeholder="name@example.com" />
+            <ValidationMessage For="@(() => loginCredentials.Email)" class="validation-error" />
+        </div>
 
-<form method="post" action="/api/auth/login">
-    <input name="Email" placeholder="Email" />
-    <input name="Password" type="password" placeholder="Password" />
+        <div class="form-group">
+            <label for="password">Password</label>
+            <InputText id="password" type="password" class="form-control-custom" @bind-Value="loginCredentials.Password" placeholder="••••••••" />
+            <ValidationMessage For="@(() => loginCredentials.Password)" class="validation-error" />
+        </div>
 
-    <button type="submit">Login</button>
-</form>
+        <button type="submit" class="btn-secondary">Sign In</button>
+    </EditForm>
+</div>
 
 @code {
-    
-protected override async Task OnInitializedAsync()
-{
-    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-    var user = authState.User;
+    private LoginDto loginCredentials = new LoginDto();
 
-    if (user.Identity != null && user.Identity.IsAuthenticated)
+    protected override async Task OnInitializedAsync()
     {
-        Navigation.NavigateTo("/dashboard", true);
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/dashboard", true);
+        }
+    }
+
+    private void HandleLogin()
+    {
+        Console.WriteLine($"Form submitted successfully for: {loginCredentials.Email}");
     }
 }
-
-}
-
-

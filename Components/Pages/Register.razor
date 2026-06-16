@@ -1,41 +1,73 @@
 @page "/register"
+@layout AuthLayout
 @rendermode InteractiveServer
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
-@using FragranceVault.DTOs;
+@using FragranceVault.DTOs
 
-<h3>Register</h3>
-<input @bind="model.FirstName" placeholder="First Name" />
-<input @bind="model.LastName" placeholder="Last Name" />   
-<input @bind="model.Email" placeholder="Email" />
-<input @bind="model.Password" placeholder="Password" type="password" />
+<div class="login-header">
+    <img src="/images/sample-images/login.png" alt="Logo" class="login-logo" />
+</div>
 
-<button @onclick="RegisterUser">Register</button>
+<div class="register-card">
+    <div class="register-header">
+        <span class="auth-logo">✦</span>
+        <h2>Create Account</h2>
+        <p>Join us to manage your personal vault</p>
+    </div>
 
-<p>@message</p>
+    <div class="form-group">
+        <label>First Name</label>
+        <input @bind="model.FirstName" class="form-control-custom" placeholder="Emilio" />
+    </div>
+
+    <div class="form-group">
+        <label>Last Name</label>
+        <input @bind="model.LastName" class="form-control-custom" placeholder="Silva" />
+    </div> 
+
+    <div class="form-group">
+        <label>Email Address</label>
+        <input @bind="model.Email" class="form-control-custom" placeholder="name@example.com" type="email" />
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <input @bind="model.Password" class="form-control-custom" placeholder="••••••••" type="password" />
+    </div>
+
+    <button class="btn-register" @onclick="RegisterUser">Register</button>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <p class="validation-error">@message</p>
+    }
+
+    <div class="register-footer">
+        <p>Already have an account? <a href="/login">Sign In</a></p>
+    </div>
+</div>
 
 @code {
     private RegisterDto model = new RegisterDto();
     private string message = "";
 
     private async Task RegisterUser()
-{
-    Console.WriteLine("BUTTON CLICKED ✅");
-
-    var response = await Http.PostAsJsonAsync("/api/auth/register", model);
-
-    var content = await response.Content.ReadAsStringAsync();
-
-    Console.WriteLine(content);
-
-    if (response.IsSuccessStatusCode)
     {
-        Navigation.NavigateTo("/login", true);
+        Console.WriteLine("BUTTON CLICKED ✅");
+
+        var response = await Http.PostAsJsonAsync("/api/auth/register", model);
+        var content = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+        else
+        {
+            message = content;
+        }
     }
-    else
-    {
-        message = content;
-    }
-}
 }

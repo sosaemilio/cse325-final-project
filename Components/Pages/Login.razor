@@ -6,32 +6,32 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 
+<PageTitle>Login - Fragance Vault</PageTitle>
+
+<div class="login-header">
+    <img src="/images/sample-images/login.png" alt="Logo" class="login-logo" />
+</div>
 <div>
-    <div class="login-header">
-        <img src="/images/sample-images/login.png" alt="Logo" class="login-logo" />
-    </div>
-    <div>
-        <h1>LOG IN</h1>
-        <p>Enter the vault to access your curated collection.</p>
-        <EditForm Model="@loginCredentials" OnValidSubmit="HandleLogin">
-            <DataAnnotationsValidator />
+    <h1>LOG IN</h1>
+    <p>Enter the vault to access your curated collection.</p>
+    <EditForm Model="@loginCredentials" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
 
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <InputText id="email" class="form-control-custom" @bind-Value="loginCredentials.Email" placeholder="name@example.com" />
-                <ValidationMessage For="@(() => loginCredentials.Email)" class="validation-error" />
-            </div>
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <InputText id="email" class="form-control-custom" @bind-Value="loginCredentials.Email" placeholder="name@example.com" />
+            <ValidationMessage For="@(() => loginCredentials.Email)" class="validation-error" />
+        </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <InputText id="password" type="password" class="form-control-custom" @bind-Value="loginCredentials.Password" placeholder="••••••••" />
-                <ValidationMessage For="@(() => loginCredentials.Password)" class="validation-error" />
-            </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <InputText id="password" type="password" class="form-control-custom" @bind-Value="loginCredentials.Password" placeholder="••••••••" />
+            <ValidationMessage For="@(() => loginCredentials.Password)" class="validation-error" />
+        </div>
 
-            <button type="submit" class="btn-secondary">ENTER VAULT</button>
-        </EditForm>
-        <p>Doesn't have an account? <a href="/register">Register</a></p>
-    </div>
+        <button type="submit" class="btn-secondary">ENTER VAULT</button>
+    </EditForm>
+    <p>Doesn't have an account? <a href="/register">Register</a></p>
 </div>
 
 @code {

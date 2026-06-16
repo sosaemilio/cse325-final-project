@@ -4,13 +4,14 @@
 
 @inject AppDbContext _context
 @inject AuthenticationStateProvider AuthStateProvider
-@inject NavigationManager Nav
+@inject NavigationManager Navigation
 @inject IJSRuntime JS
 
 @using FragranceVault.Models
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.Authorization
 @using FragranceVault.Data
+
 
 
 <h3>Vault Item Details</h3>
@@ -84,7 +85,18 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadItem();
+        
+var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+
+    if (user.Identity == null || !user.Identity.IsAuthenticated)
+    {
+        Navigation.NavigateTo("/login", true); 
+        return;
+    }
+
+    await LoadItem();
+
     }
 
     private async Task LoadItem()
@@ -148,7 +160,7 @@ else
     await _context.SaveChangesAsync();
 
     // ✅ Redirect after delete
-    Nav.NavigateTo("/vault");
+    Navigation.NavigateTo("/vault");
 }
 
 private async Task ConfirmDelete()

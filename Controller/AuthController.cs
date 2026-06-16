@@ -5,8 +5,8 @@ using FragranceVault.DTOs;
 using FragranceVault.Models;
 
 [Route("api/auth")]
-[ApiController]
-public class AuthController: ControllerBase
+
+public class AuthController: Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
@@ -20,7 +20,7 @@ public class AuthController: ControllerBase
 
 //Register a new user 
     [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto dto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
             {
                 var user = new ApplicationUser
                 {
@@ -29,12 +29,15 @@ public class AuthController: ControllerBase
                     FirstName = dto.FirstName,
                     LastName = dto.LastName
                 };
-
+                Console.WriteLine($"Password received: {dto.Password}");
                 var result = await _userManager.CreateAsync(user, dto.Password);
 
                 if (!result.Succeeded)
                 {
-                    return BadRequest(result.Errors);
+                    
+                    var errors = result.Errors.Select(e => e.Description);
+                    return BadRequest(errors);
+
                 }
 
                 return Ok(new {message = "User registered successfully"});
@@ -51,14 +54,14 @@ public class AuthController: ControllerBase
             var result = await _signInManager.PasswordSignInAsync(
                 user,
                 dto.Password,
-                isPersistent: false,
+                isPersistent: true,
                 lockoutOnFailure: false
             );
 
             if (!result.Succeeded)
-                return Unauthorized("Invalid credentials");
+                return Redirect("/login?error=invalid");
 
-            return Redirect("/dashboard"); 
+            return Redirect("/dashboard");
         }
 
 

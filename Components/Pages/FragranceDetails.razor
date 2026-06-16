@@ -4,7 +4,7 @@
 @inject AppDbContext _context
 @inject AuthenticationStateProvider AuthStateProvider
 
-@inject NavigationManager Nav
+@inject NavigationManager Navigation
 
 @using FragranceVault.Models
 @using Microsoft.AspNetCore.Components.Authorization
@@ -67,8 +67,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadFragrance();
-    }
+             await LoadFragrance();
+        
+        }
 
     
 private async Task LoadFragrance()
@@ -87,6 +88,8 @@ private async Task LoadFragrance()
     private async Task AddToVault()
 {
     if (fragrance == null) return;
+
+
 
     var authState = await AuthStateProvider.GetAuthenticationStateAsync();
     var user = authState.User;
@@ -129,6 +132,6 @@ var exists = await _context.VaultItems.AnyAsync(v => v.UserId == userId && v.Fra
     message = "✅ Added to your vault!";
 
     // ✅ Redirect to vault after saving
-    Nav.NavigateTo("/browse");
+    Navigation.NavigateTo("/browse");
 }
 }

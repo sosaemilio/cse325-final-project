@@ -1,12 +1,10 @@
 @page "/login"
 @layout AuthLayout
 @rendermode InteractiveServer
-
-@using FragranceVault.DTOs  
 @using Microsoft.AspNetCore.Components.Authorization
+
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
-@inject HttpClient Http
 
 <PageTitle>Login - Fragance Vault</PageTitle>
 
@@ -15,37 +13,53 @@
 </div>
 
 <div class="login-card">
+
     <div class="login-header">
-        <h2 class="headline-md">LOG IN</h2>
-        <p class="body-md">Enter the vault to access your curated collection.</p>
+        <h2>LOG IN</h2>
+        <p>Enter the vault to access your curated collection.</p>
     </div>
 
-    <EditForm Model="@loginCredentials" OnValidSubmit="HandleLogin">
-        <DataAnnotationsValidator />
+    <!-- ✅ FORM (IMPORTANT FOR AUTH) -->
+    <form method="post" action="/api/auth/login" name="loginForm">
 
         <div class="form-group">
-            <label for="email">Email Address</label>
-            <InputText id="email" class="form-control-custom" @bind-Value="loginCredentials.Email" placeholder="name@example.com" />
-            <ValidationMessage For="@(() => loginCredentials.Email)" class="validation-error" />
+            <label>Email Address</label>
+            <input name="Email"
+                   class="form-control-custom"
+                   placeholder="name@example.com" />
         </div>
 
         <div class="form-group">
-            <label for="password">Password</label>
-            <InputText id="password" type="password" class="form-control-custom" @bind-Value="loginCredentials.Password" placeholder="••••••••" />
-            <ValidationMessage For="@(() => loginCredentials.Password)" class="validation-error" />
+            <label>Password</label>
+            <input name="Password"
+                   type="password"
+                   class="form-control-custom"
+                   placeholder="••••••••" />
         </div>
-        <button type="submit" class="btn-login">ENTER VAULT</button>
-    </EditForm>
+
+        <button type="submit" class="btn-login">
+            ENTER VAULT
+        </button>
+
     
+
+    </form>
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <p class="validation-error">@message</p>
+        }
+
     <div class="login-footer">
-        <p>Don't have an account? <a href="/register">Register</a></p>
+        <p>
+            Don't have an account?
+            <a href="/register">Register</a>
+        </p>
     </div>
+
 </div>
 
-
 @code {
-    private LoginDto loginCredentials = new LoginDto();
-    private string errorMessage = ""; // Add this to display backend errors to the user
+    private string message = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,34 +70,13 @@
         {
             Navigation.NavigateTo("/dashboard", true);
         }
-    }
 
-    private async Task HandleLogin()
-    {
-        Console.WriteLine($"Form submitted successfully for: {loginCredentials.Email} ✅");
-        errorMessage = ""; 
+       
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
 
-        try
+        if (uri.Query.Contains("error=invalid"))
         {
-            var response = await Http.PostAsJsonAsync("/api/auth/login", loginCredentials);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Login API request succeeded!");
-                
-                Navigation.NavigateTo("/dashboard", true);
-            }
-            else
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                errorMessage = !string.IsNullOrEmpty(content) ? content : "Invalid email or password.";
-                Console.WriteLine($"Login failed: {errorMessage} ");
-            }
-        }
-        catch (Exception ex)
-        {
-            errorMessage = "A server connection error occurred.";
-            Console.WriteLine($"Database or network connection exception: {ex.Message}");
+            message = "❌ Invalid email or password";
         }
     }
 }

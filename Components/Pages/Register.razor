@@ -68,7 +68,18 @@
         }
         else
         {
-            message = content;
+            
+        var errors = await response.Content.ReadFromJsonAsync<List<string>>();
+
+        if (errors != null && errors.Count > 0)
+        {
+            message = string.Join("\n", errors);
+        }
+        else
+        {
+            message = "❌ Registration failed";
+        }
+
         }
     }
 }

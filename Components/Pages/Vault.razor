@@ -12,7 +12,8 @@
 @inject NavigationManager Navigation
 <h2 style="margin-left: 30px;">The Vault</h2>
 
-<p>Total: @vault.Count</p>
+<p>Total Bottles: @vault.Count</p>
+<button @onclick = '() => Navigation.NavigateTo($"/browse")'>Browse</button>
 
 <div class="vault-grid">
     @foreach (var item in vault)
@@ -43,7 +44,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadVault();
+        
+var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+
+    if (user.Identity == null || !user.Identity.IsAuthenticated)
+    {
+        Navigation.NavigateTo("/login", true);
+        return;
+    }
+
+    await LoadVault();
+
     }
     private async Task LoadVault()
 {
@@ -77,7 +89,7 @@ private async Task DeleteItem(int id)
         await _context.SaveChangesAsync();
     }
 
-    await LoadVault(); // refresh
+    await LoadVault(); 
 }
 
 

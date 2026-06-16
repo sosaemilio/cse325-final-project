@@ -1,52 +1,148 @@
 @page "/browse"
 @rendermode InteractiveServer
-<PageTitle>Browser our Curated Collection</PageTitle>
 
-@using FragranceVault.Data;
+<PageTitle>Browse our Curated Collection</PageTitle>
+
 @using FragranceVault.Models
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.EntityFrameworkCore
 
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthStateProvider
 
-@inject AppDbContext _context
-@inject IHttpContextAccessor HttpContextAccessor
-
-
 <h1>Curated Collection</h1>
-<p>Explore our extensive archive of artisanal scents. Filter by notes, houses, and concentrations to find your next signature.</p>
 
-<p>Showing @fragrances.Count Fragrances</p>
+<div class="browse-page">
 
-<div class="grid">
-    @foreach (var item in fragrances)
-    {         
-        <div class="card">
+   
+    <div class="filters">
 
-            <div @onclick="() => GoToDetails(item.Id)">
-            @if (!string.IsNullOrEmpty(item.ImageUrl))
-                    {
-                        <img src="@item.ImageUrl" alt="@item.Name" />
-                    }
-                <h2>@item.Name</h2>
-                <p>@item.Brand</p>
+        <h4>Filters</h4>
+
+     
+        <div class="filter-section">
+            <p>Brand</p>
+
+            <div class="filter-list">
+                @foreach (var brand in brands)
+                {
+                    <label class="filter-item">
+                        <input type="checkbox"
+                            checked="@selectedBrands.Contains(brand)"
+                            @onchange="e => OnBrandChanged(e, brand)" />
+
+                        <span>@brand</span>
+                    </label>
+                }
             </div>
+    </div>
+
+        
+        <div class="filter-section">
+            <p>Notes</p>
+
+            @foreach (var note in notesList)
+            {
+                <button class="tag @(selectedNotes.Contains(note) ? "active" : "")"
+                        @onclick="() => ToggleNote(note)">
+                    @note
+                </button>
+            }
         </div>
-    }
+
+        <div class="filter-section">
+            <p>Concentration</p>
+
+            @foreach (var conc in concentrations)
+            {
+                <label>
+                    <input type="checkbox"
+                           checked="@selectedConcentrations.Contains(conc)"
+                           @onchange="e => OnConcentrationChanged(e, conc)" />
+                    @conc
+                </label>
+            }
+        </div>
+
+    </div>
+
+    
+    <div class="browse-content">
+
+        <p class="subtitle">
+            Explore our extensive archive of artisanal scents. Filter by notes, houses, and concentrations to find your next signature.
+        </p>
+
+        <p>Showing @filteredFragrances.Count fragrances</p>
+
+        <div class="grid">
+            @foreach (Fragrance fragrance in filteredFragrances)
+            {
+                <div class="card">
+
+                    <div @onclick="() => GoToDetails(fragrance.Id)">
+
+                        @if (!string.IsNullOrEmpty(fragrance.ImageUrl))
+                        {
+                            <img src="@fragrance.ImageUrl" alt="@fragrance.Name" />
+                        }
+
+                        <h2>@fragrance.Name</h2>
+                        <p>@fragrance.Brand</p>
+
+                    </div>
+
+                </div>
+            }
+        </div>
+
+        <p>@message</p>
+
+    </div>
+
 </div>
 
-<p>@message</p>
-
 @code {
+
     private List<Fragrance> fragrances = new();
+    private List<Fragrance> filteredFragrances = new();
+
     private string message = "";
+
+    
+    private List<string> brands = new();
+    private List<string> notesList = new();
+    private List<string> concentrations = new();
+
+
+    private List<string> selectedBrands = new();
+    private List<string> selectedNotes = new();
+    private List<string> selectedConcentrations = new();
 
     protected override async Task OnInitializedAsync()
     {
         await LoadFragrances();
+        filteredFragrances = fragrances;
+
+    brands = fragrances
+    .Select(f => f.Brand)
+    .Distinct()
+    .OrderBy(b => b)
+    .ToList();
+
+    notesList = fragrances
+    .SelectMany(f => f.Notes.Split(',', StringSplitOptions.RemoveEmptyEntries))
+    .Select(n => n.Trim())
+    .Distinct()
+    .OrderBy(n => n)
+    .ToList();
+
+concentrations = fragrances
+    .Select(f => f.Concentration)
+    .Distinct()
+    .OrderBy(c => c)
+    .ToList();
+
     }
 
     private async Task LoadFragrances()
@@ -57,6 +153,8 @@
         {
             fragrances = await response.Content.ReadFromJsonAsync<List<Fragrance>>() 
                           ?? new List<Fragrance>();
+
+            filteredFragrances = fragrances;
         }
         else
         {
@@ -64,27 +162,62 @@
         }
     }
 
-    
+   
+    private void ApplyFilters()
+    {
+        filteredFragrances = fragrances.Where(f =>
+        {
+            var brandMatch = selectedBrands.Count == 0 || selectedBrands.Contains(f.Brand);
 
+            var noteMatch = selectedNotes.Count == 0 ||
+                            selectedNotes.Any(n => f.Notes != null &&
+                                f.Notes.Contains(n, StringComparison.OrdinalIgnoreCase));
+
+            var concentrationMatch = selectedConcentrations.Count == 0 ||
+                                     selectedConcentrations.Contains(f.Concentration);
+
+            return brandMatch && noteMatch && concentrationMatch;
+        }).ToList();
+    }
+
+    private void OnBrandChanged(ChangeEventArgs e, string brand)
+    {
+        bool isChecked = (bool)e.Value!;
+
+        if (isChecked)
+            selectedBrands.Add(brand);
+        else
+            selectedBrands.Remove(brand);
+
+        ApplyFilters();
+    }
+
+    private void ToggleNote(string note)
+    {
+        if (selectedNotes.Contains(note))
+            selectedNotes.Remove(note);
+        else
+            selectedNotes.Add(note);
+
+        ApplyFilters();
+    }
+
+    private void OnConcentrationChanged(ChangeEventArgs e, string conc)
+    {
+        bool isChecked = (bool)e.Value!;
+
+        if (isChecked)
+            selectedConcentrations.Add(conc);
+        else
+            selectedConcentrations.Remove(conc);
+
+        ApplyFilters();
+    }
 
     private void GoToDetails(int fragranceId)
     {
         Navigation.NavigateTo($"/fragrance/{fragranceId}");
     }
 
-    
-
-private async Task<string?> GetUserId()
-{
-    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-    var user = authState.User;
-
-    Console.WriteLine($"Authenticated: {user.Identity?.IsAuthenticated}");
-
-    return user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
-
-
-
-
-}
+``

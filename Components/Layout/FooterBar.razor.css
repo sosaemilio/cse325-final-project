@@ -1,7 +1,8 @@
-nav {
+.footer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding: 1rem 0px;
   align-items: center;
 }
 
@@ -10,5 +11,9 @@ ul {
   display: flex;
   column-gap: 32px;
   color: #5E5E5B;
-  text-align: center;
+}
+
+footer {
+    margin-top: auto; /* Pushes footer to the bottom if content is short */
+    width: 100%;
 }

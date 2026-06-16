@@ -1,3 +1,8 @@
+
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
 <nav>
         <a href="">
             <h2>Fragrance Vault</h2>
@@ -23,11 +28,67 @@
             </ul>
         </div>
 
-        <div>
-            <button class="btn-primary">
-                <a class="nav-link" href="/login">
-                    Login / Sign Up
-                </a>
-            </button>
-        </div>
+        
+        <AuthorizeView>
+
+  
+            <Authorized>
+                <div class="user-dropdown">
+
+                    <button class="btn-primary" @onclick="ToggleMenu">
+                        @firstName ▼
+                    </button>
+
+                    @if (showMenu)
+                    {
+                        <div class="dropdown-menu">
+                            <form method="post" action="/api/auth/logout">
+                                <button type="submit">Logout</button>
+                            </form>
+                        </div>
+                    }
+
+                </div>
+            </Authorized>
+
+        
+            <NotAuthorized>
+                <div class="auth-buttons">
+
+                    <button class="btn-secondary" @onclick='() => Navigation.NavigateTo("/login")'>
+                       Log-in
+                    </button>
+
+                    <button class="btn-primary" @onclick='() => Navigation.NavigateTo("/register")'>
+                        Register
+                    </button>
+
+                </div>
+            </NotAuthorized>
+
+        </AuthorizeView>
+
 </nav>
+
+
+@code {
+
+    private string firstName = "User";
+    private bool showMenu = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            firstName = user.FindFirst("FirstName")?.Value ?? "User";
+        }
+    }
+
+    private void ToggleMenu()
+    {
+        showMenu = !showMenu;
+    }
+}

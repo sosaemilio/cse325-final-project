@@ -17,6 +17,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        
+        builder.Entity<ApplicationUser>()
+        .HasIndex(u => u.Email)
+        .IsUnique();
+
 
     }
 }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace cse325_final_project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260616093629_InitialCreate")]
+    [Migration("20260616125857_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -81,6 +81,9 @@ namespace cse325_final_project.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");

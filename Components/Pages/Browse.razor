@@ -104,120 +104,147 @@
 
 @code {
 
+    // Stores all fragrances retrieved from the API
     private List<Fragrance> fragrances = new();
+
+    // Stores the filtered list based on selected filters
     private List<Fragrance> filteredFragrances = new();
 
+    // Message displayed to the user (e.g., error loading data)
     private string message = "";
 
-    
+    // Lists used to populate filter options dynamically
     private List<string> brands = new();
     private List<string> notesList = new();
     private List<string> concentrations = new();
 
-
+    // Lists that store currently selected filter values
     private List<string> selectedBrands = new();
     private List<string> selectedNotes = new();
     private List<string> selectedConcentrations = new();
 
+    // Runs when the component initializes
     protected override async Task OnInitializedAsync()
     {
+        // Load all fragrances from the API
         await LoadFragrances();
+
+        // Initially show all fragrances
         filteredFragrances = fragrances;
 
-    brands = fragrances
-    .Select(f => f.Brand)
-    .Distinct()
-    .OrderBy(b => b)
-    .ToList();
+        // Generate unique brand list from fragrance data
+        brands = fragrances
+            .Select(f => f.Brand)
+            .Distinct()
+            .OrderBy(b => b)
+            .ToList();
 
-    notesList = fragrances
-    .SelectMany(f => f.Notes.Split(',', StringSplitOptions.RemoveEmptyEntries))
-    .Select(n => n.Trim())
-    .Distinct()
-    .OrderBy(n => n)
-    .ToList();
+        // Extract and normalize notes into a distinct list
+        notesList = fragrances
+            .SelectMany(f => f.Notes.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            .Select(n => n.Trim())
+            .Distinct()
+            .OrderBy(n => n)
+            .ToList();
 
-concentrations = fragrances
-    .Select(f => f.Concentration)
-    .Distinct()
-    .OrderBy(c => c)
-    .ToList();
-
+        // Generate unique concentration list
+        concentrations = fragrances
+            .Select(f => f.Concentration)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
     }
 
+    // Loads fragrances from the backend API
     private async Task LoadFragrances()
     {
         var response = await Http.GetAsync("/api/fragrances");
 
+        // If request is successful, deserialize the data
         if (response.IsSuccessStatusCode)
         {
             fragrances = await response.Content.ReadFromJsonAsync<List<Fragrance>>() 
                           ?? new List<Fragrance>();
 
+            // Initialize filtered list with all data
             filteredFragrances = fragrances;
         }
         else
         {
+            // Display error message if loading fails
             message = "Failed to load fragrances";
         }
     }
 
-   
+    // Applies selected filters to the fragrance list
     private void ApplyFilters()
     {
         filteredFragrances = fragrances.Where(f =>
         {
+            // Match selected brands (or include all if none selected)
             var brandMatch = selectedBrands.Count == 0 || selectedBrands.Contains(f.Brand);
 
+            // Match selected notes (case-insensitive check)
             var noteMatch = selectedNotes.Count == 0 ||
                             selectedNotes.Any(n => f.Notes != null &&
                                 f.Notes.Contains(n, StringComparison.OrdinalIgnoreCase));
 
+            // Match selected concentrations
             var concentrationMatch = selectedConcentrations.Count == 0 ||
                                      selectedConcentrations.Contains(f.Concentration);
 
+            // Include fragrance only if all conditions are satisfied
             return brandMatch && noteMatch && concentrationMatch;
         }).ToList();
     }
 
+    // Handles checkbox changes for brand filters
     private void OnBrandChanged(ChangeEventArgs e, string brand)
     {
         bool isChecked = (bool)e.Value!;
 
+        // Add or remove brand from selected list
         if (isChecked)
             selectedBrands.Add(brand);
         else
             selectedBrands.Remove(brand);
 
+        // Reapply filters after change
         ApplyFilters();
     }
 
+    // Toggles note selection for filter buttons
     private void ToggleNote(string note)
     {
+        // Add or remove note from selected list
         if (selectedNotes.Contains(note))
             selectedNotes.Remove(note);
         else
             selectedNotes.Add(note);
 
+        // Reapply filters after change
         ApplyFilters();
     }
 
+    // Handles checkbox changes for concentration filters
     private void OnConcentrationChanged(ChangeEventArgs e, string conc)
     {
         bool isChecked = (bool)e.Value!;
 
+        // Add or remove concentration from selected list
         if (isChecked)
             selectedConcentrations.Add(conc);
         else
             selectedConcentrations.Remove(conc);
 
+        // Reapply filters after change
         ApplyFilters();
     }
 
+    // Navigates to the fragrance details page
     private void GoToDetails(int fragranceId)
     {
         Navigation.NavigateTo($"/fragrance/{fragranceId}");
     }
 
 }
-``

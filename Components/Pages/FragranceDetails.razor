@@ -69,82 +69,97 @@ else
 }
 
 @code {
+
+    // Route parameter used to identify which fragrance to display
     [Parameter] public int Id { get; set; }
 
+    // Holds the selected fragrance details
     private Fragrance? fragrance;
 
+    // User input fields for customizing the vault item
     private string notes = "";
     private string season = "";
     private string occasion = "";
+
+    // Message displayed to the user (success or error feedback)
     private string message = "";
 
+    // Runs when the component is initialized
     protected override async Task OnInitializedAsync()
     {
-             await LoadFragrance();
-        
+        // Load the fragrance details based on the provided ID
+        await LoadFragrance();
+    }
+
+    // Loads the selected fragrance from the database
+    private async Task LoadFragrance()
+    {
+        // Find the fragrance by its ID
+        fragrance = await _context.Fragrances.FindAsync(Id);
+
+        // If found, populate default values for customization fields
+        if (fragrance != null)
+        {
+            notes = fragrance.Notes ?? "";
+            season = fragrance.Season ?? "";
+            occasion = fragrance.Occasion ?? "";
+        }
+    }
+
+    // Adds the selected fragrance to the user's vault
+    private async Task AddToVault()
+    {
+        // Ensure fragrance exists before proceeding
+        if (fragrance == null) return;
+
+        // Retrieve authentication state
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Get the current user's ID
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        // If user is not logged in, show error message
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Not logged in";
+            return;
         }
 
-    
-private async Task LoadFragrance()
-{
-    fragrance = await _context.Fragrances.FindAsync(Id);
+        // Check if this fragrance already exists in the user's vault
+        var exists = await _context.VaultItems
+            .AnyAsync(v => v.UserId == userId && v.FragranceId == fragrance.Id);
 
-    if (fragrance != null)
-    {
-        notes = fragrance.Notes ?? "";
-        season = fragrance.Season ?? "";
-        occasion = fragrance.Occasion ?? "";
+        // Prevent duplicate entries
+        if (exists)
+        {
+            message = "This fragrance is already in your vault";
+            return;
+        }
+
+        // Create a new vault item with user-provided and default values
+        var item = new VaultItem
+        {
+            UserId = userId,
+            FragranceId = fragrance.Id,
+            BuyDate = DateTime.Now,
+            ExpirationDate = DateTime.Now.AddYears(2),
+
+            // Custom user inputs
+            PersonalNotes = notes,
+            Season = season,
+            Occasion = occasion,
+            Rating = 0
+        };
+
+        // Save the new item to the database
+        _context.VaultItems.Add(item);
+        await _context.SaveChangesAsync();
+
+        // Provide success feedback to the user
+        message = "Added to your vault";
+
+        // Redirect back after adding
+        Navigation.NavigateTo("/browse");
     }
-}
-
-
-    private async Task AddToVault()
-{
-    if (fragrance == null) return;
-
-
-
-    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-    var user = authState.User;
-
-    var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-    if (string.IsNullOrEmpty(userId))
-    {
-        message = "❌ Not logged in";
-        return;
-    }
-
-    
-var exists = await _context.VaultItems.AnyAsync(v => v.UserId == userId && v.FragranceId == fragrance.Id);
-
-    if (exists)
-    {
-        message = "⚠️ This fragrance is already in your vault!";
-        return;
-    }
-
-
-    var item = new VaultItem
-    {
-        UserId = userId,
-        FragranceId = fragrance.Id,
-        BuyDate = DateTime.Now,
-        ExpirationDate = DateTime.Now.AddYears(2),
-
-        // ✅ USER CUSTOM VALUES
-        PersonalNotes = notes,
-        Season = season,
-        Occasion = occasion,
-        Rating = 0
-    };
-
-    _context.VaultItems.Add(item);
-    await _context.SaveChangesAsync();
-
-    message = "✅ Added to your vault!";
-
-    // ✅ Redirect to vault after saving
-    Navigation.NavigateTo("/browse");
-}
 }

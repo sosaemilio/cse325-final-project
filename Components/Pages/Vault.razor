@@ -46,67 +46,82 @@
 
 
 @code {
+
+    // List that holds all vault items for the current user
     private List<VaultItem> vault = new();
 
-
+    // Runs when the component is initialized
     protected override async Task OnInitializedAsync()
     {
-        
-var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-    var user = authState.User;
+        // Retrieve the current authentication state
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-    if (user.Identity == null || !user.Identity.IsAuthenticated)
-    {
-        Navigation.NavigateTo("/login", true);
-        return;
+        // If the user is not authenticated, redirect to login page
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login", true);
+            return;
+        }
+
+        // Load the user's vault items
+        await LoadVault();
     }
 
-    await LoadVault();
-
-    }
+    // Loads all vault items for the current user
     private async Task LoadVault()
-{
-    Console.WriteLine("LOAD VAULT CLICKED ✅");
-
-    var userId = await GetUserId();
-
-    Console.WriteLine($"UserId: {userId}");
-
-    if (string.IsNullOrEmpty(userId))
     {
-        Console.WriteLine("NOT LOGGED IN ❌");
-        return;
+        // Debug log to indicate function execution
+        Console.WriteLine("LOAD VAULT CLICKED");
+
+        // Get the current user's ID
+        var userId = await GetUserId();
+
+        Console.WriteLine($"UserId: {userId}");
+
+        // If no user ID is found, exit early
+        if (string.IsNullOrEmpty(userId))
+        {
+            Console.WriteLine("User not logged in");
+            return;
+        }
+
+        // Query the database for vault items belonging to this user
+        // Include fragrance details for display purposes
+        vault = await _context.VaultItems
+            .Where(v => v.UserId == userId)
+            .Include(v => v.Fragrance)
+            .ToListAsync();
+
+        // Log the number of items retrieved
+        Console.WriteLine($"Items loaded: {vault.Count}");
     }
 
-    vault = await _context.VaultItems
-        .Where(v => v.UserId == userId)
-        .Include(v => v.Fragrance)
-        .ToListAsync();
-
-    Console.WriteLine($"Items loaded: {vault.Count}");
-}
-
-private async Task DeleteItem(int id)
-{
-    var item = await _context.VaultItems.FindAsync(id);
-
-    if (item != null)
+    // Deletes a vault item by its ID
+    private async Task DeleteItem(int id)
     {
-        _context.VaultItems.Remove(item);
-        await _context.SaveChangesAsync();
+        // Find the item in the database
+        var item = await _context.VaultItems.FindAsync(id);
+
+        // If the item exists, remove it
+        if (item != null)
+        {
+            _context.VaultItems.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
+        // Reload vault after deletion to update UI
+        await LoadVault(); 
     }
 
-    await LoadVault(); 
-}
+    // Retrieves the current user's ID from authentication claims
+    private async Task<string?> GetUserId()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-
-    
-private async Task<string?> GetUserId()
-{
-    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-    var user = authState.User;
-
-    return user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-}
+        // Return the NameIdentifier claim (unique user ID)
+        return user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    }
 
 }

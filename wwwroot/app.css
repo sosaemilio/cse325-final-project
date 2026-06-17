@@ -60,6 +60,11 @@ body {
     padding: 1rem 4rem;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 /* Fixed Grid Core Container Wrapper */
 .app-container {
     max-width: var(--max-width);

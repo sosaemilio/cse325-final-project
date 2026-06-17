@@ -60,24 +60,29 @@
 </div>
 
 @code {
+    // Message displayed to the user (e.g., login error)
     private string message = "";
 
+    // Runs when the component initializes
     protected override async Task OnInitializedAsync()
     {
+        // Retrieve the current authentication state
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
+        // If the user is already logged in, redirect to dashboard
         if (user.Identity != null && user.Identity.IsAuthenticated)
         {
             Navigation.NavigateTo("/dashboard", true);
         }
 
-       
+        // Get the current URL to check for query parameters
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
 
+        // If the URL contains an error flag, display login error message
         if (uri.Query.Contains("error=invalid"))
         {
-            message = "❌ Invalid email or password";
+            message = "Invalid email or password";
         }
     }
 }

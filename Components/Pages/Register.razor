@@ -51,35 +51,46 @@
 </div>
 
 @code {
+    // Model bound to the registration form inputs
     private RegisterDto model = new RegisterDto();
+
+    // Message displayed to the user (errors or feedback)
     private string message = "";
 
+    // Handles user registration when the form is submitted
     private async Task RegisterUser()
     {
-        Console.WriteLine("BUTTON CLICKED ✅");
+        // Debug log to confirm button click
+        Console.WriteLine("BUTTON CLICKED");
 
+        // Send registration request to the backend API
         var response = await Http.PostAsJsonAsync("/api/auth/register", model);
+
+        // Read raw response content (useful for debugging)
         var content = await response.Content.ReadAsStringAsync();
         Console.WriteLine(content);
 
+        // If registration succeeds
         if (response.IsSuccessStatusCode)
         {
+            // Redirect user to login page
             Navigation.NavigateTo("/login", true);
         }
         else
         {
-            
-        var errors = await response.Content.ReadFromJsonAsync<List<string>>();
+            // Attempt to read list of error messages from the response
+            var errors = await response.Content.ReadFromJsonAsync<List<string>>();
 
-        if (errors != null && errors.Count > 0)
-        {
-            message = string.Join("\n", errors);
-        }
-        else
-        {
-            message = "❌ Registration failed";
-        }
-
+            // If errors exist, display them to the user
+            if (errors != null && errors.Count > 0)
+            {
+                message = string.Join("\n", errors);
+            }
+            else
+            {
+                // Fallback error message if none are returned
+                message = "Registration failed";
+            }
         }
     }
 }

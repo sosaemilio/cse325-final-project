@@ -87,10 +87,13 @@ else
 }
 
 @code {
+    // Route parameter used to identify which vault item to load
     [Parameter] public int Id { get; set; }
 
+    // Holds the current vault item being displayed
     private VaultItem? item;
 
+    // Local variables bound to form inputs
     private DateTime buyDate;
     private DateTime? expirationDate;
     private string notes = "";
@@ -98,38 +101,45 @@ else
     private string occasion = "";
     private int rating;
 
+    // Message displayed to the user (e.g., save confirmation)
     private string message = "";
 
+    // Runs when the component initializes
     protected override async Task OnInitializedAsync()
     {
-        
-var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-    var user = authState.User;
+        // Retrieve authentication state
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-    if (user.Identity == null || !user.Identity.IsAuthenticated)
-    {
-        Navigation.NavigateTo("/login", true); 
-        return;
+        // Redirect to login if user is not authenticated
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login", true); 
+            return;
+        }
+
+        // Load the vault item data
+        await LoadItem();
     }
 
-    await LoadItem();
-
-    }
-
+    // Loads the vault item for the current user
     private async Task LoadItem()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
+        // Get the current user's ID from claims
         var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(userId)) return;
 
+        // Retrieve the vault item that matches the ID and belongs to the current user
         item = await _context.VaultItems
             .Where(v => v.Id == Id && v.UserId == userId)
             .Include(v => v.Fragrance)
             .FirstOrDefaultAsync();
 
+        // If the item is found, populate the form fields
         if (item != null)
         {
             buyDate = item.BuyDate;
@@ -141,10 +151,12 @@ var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         }
     }
 
+    // Saves changes made to the vault item
     private async Task SaveChanges()
     {
         if (item == null) return;
 
+        // Update the item with values from the form
         item.BuyDate = buyDate;
         item.ExpirationDate = expirationDate;
         item.PersonalNotes = notes;
@@ -152,44 +164,50 @@ var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         item.Occasion = occasion;
         item.Rating = rating;
 
+        // Persist changes to the database
         await _context.SaveChangesAsync();
 
-        message = "✅ Saved successfully!";
+        // Display confirmation message
+        message = "Saved successfully";
     }
 
+    // Deletes the current vault item
     private async Task DeleteItem()
-{
-    if (item == null) return;
-
-    // ✅ ensure user owns it (extra security)
-    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-    var user = authState.User;
-
-    var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-    if (item.UserId != userId)
     {
-        message = "❌ Unauthorized";
-        return;
+        if (item == null) return;
+
+        // Retrieve authentication state
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Get the current user's ID
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        // Ensure the item belongs to the current user before deleting
+        if (item.UserId != userId)
+        {
+            message = "Unauthorized";
+            return;
+        }
+
+        // Remove the item from the database
+        _context.VaultItems.Remove(item);
+        await _context.SaveChangesAsync();
+
+        // Redirect back to vault list after deletion
+        Navigation.NavigateTo("/vault");
     }
 
-    _context.VaultItems.Remove(item);
-    await _context.SaveChangesAsync();
-
-    // ✅ Redirect after delete
-    Navigation.NavigateTo("/vault");
-}
-
-private async Task ConfirmDelete()
-{
-    var confirmed = await JS.InvokeAsync<bool>("confirm", "Delete this item?");
-
-    if (confirmed)
+    // Displays a confirmation dialog before deleting the item
+    private async Task ConfirmDelete()
     {
-        await DeleteItem();
+        // Show browser confirmation dialog
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Delete this item?");
+
+        // If user confirms, proceed with deletion
+        if (confirmed)
+        {
+            await DeleteItem();
+        }
     }
-}
-
-
-
 }

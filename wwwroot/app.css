@@ -307,22 +307,6 @@ button {
     margin-top: 10px;
 }
 
-
-/* Fragrance View by Id  */
-
-
-.details img {
-    width: 300px;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-.details {
-    max-width: 500px;
-    margin: auto;
-}
-
 /* Vault Page View */
 
 

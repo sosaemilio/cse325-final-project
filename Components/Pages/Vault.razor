@@ -10,10 +10,17 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
-<h2 style="margin-left: 30px;">The Vault</h2>
 
-<p>Total Bottles: @vault.Count</p>
-<button @onclick = '() => Navigation.NavigateTo($"/browse")'>Browse</button>
+<PageTitle>My Vault</PageTitle>
+<h1>My Fragance Vault</h1>
+
+<div class="vault-header">
+    <p>Total Bottles: @vault.Count</p>
+    <button @onclick = '() => Navigation.NavigateTo($"/browse")' class="btn-secondary">
+        Browse
+    </button>
+</div>
+
 
 <div class="vault-grid">
     @foreach (var item in vault)
@@ -21,13 +28,13 @@
         <div class="vault-card" @onclick='() => Navigation.NavigateTo($"/vault/{item.Id}")'>
 
             <img src="@item.Fragrance?.ImageUrl" />
-
-            <h4>@item.Fragrance?.Name</h4>
+        
+            <h2>@item.Fragrance?.Name</h2>
             <p>@item.Fragrance?.Brand</p>
 
             <div class="tags">
-                <span>@item.Season</span>
-                <span>@item.Occasion</span>
+                <p class="btn-secondary-luxe">@item.Season</p>
+                <p class="btn-secondary-luxe">@item.Occasion</p>
             </div>
 
             <p>⭐ @item.Rating</p>

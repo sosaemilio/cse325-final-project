@@ -27,7 +27,7 @@
     {
         <div class="vault-card" @onclick='() => Navigation.NavigateTo($"/vault/{item.Id}")'>
 
-            <img src="@item.Fragrance?.ImageUrl" />
+            <img src="@item.Fragrance?.ImageUrl" alt="@item.Fragrance?.Name - @item.Fragrance?.Brand"/>
         
             <h2>@item.Fragrance?.Name</h2>
             <p>@item.Fragrance?.Brand</p>

@@ -1,0 +1,142 @@
+.details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    flex-direction: row;
+    padding: 64px;
+}
+
+h3 {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 16px;
+}
+
+.details-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.details-image {
+    max-width: 500px;
+}
+
+.details-info {
+    width: 100%;
+    max-width: 540px;
+    display: flex;
+    gap: 16px;
+    flex-direction: column;
+}
+
+.luxe-input-wrapper {
+    position: relative;
+    margin-top: calc(var(--unit) * 6);
+    width: 100%;
+}
+
+.luxe-input {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;                    
+    color: var(--on-surface);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--outline-variant);
+    padding: calc(var(--unit) * 3) 0;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+
+.luxe-label {
+    position: absolute;
+    left: 0;
+    top: calc(var(--unit) * 3);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--on-surface-variant);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+
+.luxe-underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--primary);
+    transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.luxe-input:focus ~ .luxe-label,
+.luxe-input:not(:placeholder-shown) ~ .luxe-label {
+    top: calc(var(--unit) * -4);
+    font-size: 11px;                    
+    font-weight: 600;
+    text-transform: uppercase;           
+    letter-spacing: 0.15em;               
+    color: var(--muted-gold);             
+}
+
+.luxe-input:focus ~ .luxe-underline {
+    width: 100%;
+}
+
+.luxe-input.is-invalid {
+    border-bottom-color: var(--error);
+}
+.luxe-input.is-invalid ~ .luxe-label {
+    color: var(--error) !important;
+}
+.luxe-input.is-invalid ~ .luxe-underline {
+    background-color: var(--error);
+}
+
+/* 1. Ensure textareas act like single line zones but wrap vertically */
+.luxe-textarea {
+    resize: vertical;
+    min-height: 60px;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+}
+
+/* 2. Static configuration overrides for Native Dates and Textareas */
+.static-label .luxe-label {
+    top: calc(var(--unit) * -4) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.15em !important;
+    color: var(--on-surface-variant) !important;
+}
+
+/* Force the focused state line to still change color nicely */
+.luxe-input:focus ~ .luxe-label {
+    color: var(--muted-gold) !important;
+}
+
+/* 3. Modernizing the custom browser calendar icon appearance */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    color: var(--on-surface);
+    cursor: pointer;
+    opacity: 0.5;
+    filter: invert(var(--background) == #000000 ? 1 : 0); /* Subtle match variant */
+    transition: opacity 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}

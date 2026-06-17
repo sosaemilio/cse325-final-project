@@ -1,0 +1,9 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+h1 {
+    margin: 30px 0;
+}

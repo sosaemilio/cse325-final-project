@@ -1,0 +1,102 @@
+.details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    flex-direction: row;
+    padding: 64px;
+}
+
+h3 {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 16px;
+}
+
+.details-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.details-image {
+    max-width: 500px;
+}
+
+.details-info {
+    width: 100%;
+    max-width: 500px;
+}
+
+.luxe-input-wrapper {
+    position: relative;
+    margin-top: calc(var(--unit) * 6);
+    width: 100%;
+}
+
+.luxe-input {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;                    
+    color: var(--on-surface);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--outline-variant);
+    padding: calc(var(--unit) * 3) 0;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+
+.luxe-label {
+    position: absolute;
+    left: 0;
+    top: calc(var(--unit) * 3);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--on-surface-variant);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+
+.luxe-underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--primary);
+    transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.luxe-input:focus ~ .luxe-label,
+.luxe-input:not(:placeholder-shown) ~ .luxe-label {
+    top: calc(var(--unit) * -4);
+    font-size: 11px;                    
+    font-weight: 600;
+    text-transform: uppercase;           
+    letter-spacing: 0.15em;               
+    color: var(--muted-gold);             
+}
+
+.luxe-input:focus ~ .luxe-underline {
+    width: 100%;
+}
+
+.luxe-input.is-invalid {
+    border-bottom-color: var(--error);
+}
+.luxe-input.is-invalid ~ .luxe-label {
+    color: var(--error) !important;
+}
+.luxe-input.is-invalid ~ .luxe-underline {
+    background-color: var(--error);
+}

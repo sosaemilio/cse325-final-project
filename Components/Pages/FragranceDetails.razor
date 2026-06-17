@@ -11,8 +11,7 @@
 @using FragranceVault.Data
 @using Microsoft.EntityFrameworkCore
 
-
-<h3>Fragrance Details</h3>
+<PageTitle>@fragrance?.Name</PageTitle>
 
 @if (fragrance == null)
 {
@@ -23,35 +22,49 @@ else
     <div class="details">
 
         @if (!string.IsNullOrEmpty(fragrance.ImageUrl))
-        {
-            <img src="@fragrance.ImageUrl" />
+        {   
+            <div class="details-image">
+                <img src="@fragrance.ImageUrl" />
+            </div>
         }
 
-        <h2>@fragrance.Name</h2>
-        <p><b>Brand:</b> @fragrance.Brand</p>
-        <p><b>Notes:</b> @fragrance.Notes</p>
-        <p><b>Season:</b> @fragrance.Season</p>
-        <p><b>Occasion:</b> @fragrance.Occasion</p>
+        <div class="details-info">
+            <h1>@fragrance.Name</h1>
+            <div class="details-meta">
+                <p><b>Brand:</b> @fragrance.Brand</p>
+                <p><b>Notes:</b> @fragrance.Notes</p>
+                <p><b>Season:</b> @fragrance.Season</p>
+                <p><b>Occasion:</b> @fragrance.Occasion</p>
+            </div>
+            <hr />
 
-        <hr />
+            <h3>Want to add it to the vault?</h3>
+            <div class="luxe-input-wrapper">
+                <input type="text" id="notesField" class="luxe-input" placeholder=" " autocomplete="off" @bind="notes" />
+                <label for="notesField" class="luxe-label">Notes</label>
+                <span class="luxe-underline"></span>
+            </div>
 
-        <h4>Add to Vault</h4>
+            <div class="luxe-input-wrapper" style="margin-top: 32px;">
+                <input type="text" id="seasonField" class="luxe-input" placeholder=" " autocomplete="off" @bind="season" />
+                <label for="seasonField" class="luxe-label">Season</label>
+                <span class="luxe-underline"></span>
+            </div>
 
-        <label>Notes</label>
-        <input @bind="notes" />
+            <div class="luxe-input-wrapper" style="margin-top: 32px;">
+                <input type="text" id="occasionField" class="luxe-input" placeholder=" " autocomplete="off" @bind="occasion" />
+                <label for="occasionField" class="luxe-label">Occasion</label>
+                <span class="luxe-underline"></span>
+            </div>
 
-        <label>Season</label>
-        <input @bind="season" />
+            <br />
 
-        <label>Occasion</label>
-        <input @bind="occasion" />
-
-        <br />
-
-        <button @onclick="AddToVault">Add to Vault</button>
-
-        <p>@message</p>
-
+            <div class=button-container>
+                <button @onclick="AddToVault" class="btn-primary">Add to Vault</button>
+                <p>@message</p>
+            </div>
+            
+        </div>
     </div>
 }
 

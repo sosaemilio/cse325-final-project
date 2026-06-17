@@ -2,6 +2,7 @@
 .browse-page {
     display: flex;
     gap: 40px;
+    flex-wrap: wrap-reverse;
 }
 
 .filters {
@@ -27,6 +28,7 @@
 
 .browse-content {
     flex: 1;
+    
 }
 
 
@@ -44,4 +46,6 @@
     cursor: pointer;
 }
 
-
+h1 {
+    margin: 30px;
+}
